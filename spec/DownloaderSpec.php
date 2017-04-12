@@ -3,18 +3,18 @@
 namespace spec\Indigo\Flysystem;
 
 use League\Flysystem\Filesystem;
-use Ivory\HttpAdapter\HttpAdapterInterface;
+use Http\Client\HttpClient;
 use Psr\Http\Message\RequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\StreamableInterface as Stream;
+use Psr\Http\Message\StreamInterface as Stream;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 
 class DownloaderSpec extends ObjectBehavior
 {
-    function let(Filesystem $filesystem, HttpAdapterInterface $httpAdapter)
+    function let(Filesystem $filesystem, HttpClient $httpClient)
     {
-        $this->beConstructedWith($filesystem, $httpAdapter);
+        $this->beConstructedWith($filesystem, $httpClient);
     }
 
     function it_is_initializable()
@@ -22,9 +22,9 @@ class DownloaderSpec extends ObjectBehavior
         $this->shouldHaveType('Indigo\Flysystem\Downloader');
     }
 
-    function it_downloads_a_request(Filesystem $filesystem, HttpAdapterInterface $httpAdapter, Request $request, Response $response, Stream $stream)
+    function it_downloads_a_request(Filesystem $filesystem, HttpClient $httpClient, Request $request, Response $response, Stream $stream)
     {
-        $httpAdapter->sendRequest($request)->willReturn($response);
+        $httpClient->sendRequest($request)->willReturn($response);
         $response->getBody()->willReturn($stream);
         $stream->detach()->willReturn(tmpfile());
 
@@ -33,9 +33,9 @@ class DownloaderSpec extends ObjectBehavior
         $this->download($request, 'path/to/file')->shouldReturn(true);
     }
 
-    function it_returns_false_when_body_is_empty(Filesystem $filesystem, HttpAdapterInterface $httpAdapter, Request $request, Response $response)
+    function it_returns_false_when_body_is_empty(Filesystem $filesystem, HttpClient $httpClient, Request $request, Response $response)
     {
-        $httpAdapter->sendRequest($request)->willReturn($response);
+        $httpClient->sendRequest($request)->willReturn($response);
         $response->getBody()->willReturn(null);
 
         $filesystem->putStream('path/to/file', Argument::type('resource'))->shouldNotBeCalled();
@@ -43,9 +43,9 @@ class DownloaderSpec extends ObjectBehavior
         $this->download($request, 'path/to/file')->shouldReturn(false);
     }
 
-    function it_handles_ivory_interface_incompatibility(Filesystem $filesystem, HttpAdapterInterface $httpAdapter, Request $request, Response $response, Stream $stream)
+    function it_handles_ivory_interface_incompatibility(Filesystem $filesystem, HttpClient $httpClient, Request $request, Response $response, Stream $stream)
     {
-        $httpAdapter->sendRequest($request)->willReturn($response);
+        $httpClient->sendRequest($request)->willReturn($response);
         $response->getBody()->willReturn($stream);
         $stream->detach()->willReturn('text');
 

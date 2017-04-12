@@ -12,7 +12,7 @@
 namespace Indigo\Flysystem;
 
 use League\Flysystem\Filesystem;
-use Ivory\HttpAdapter\HttpAdapterInterface;
+use Http\Client\HttpClient;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -28,18 +28,18 @@ class Downloader
     protected $filesystem;
 
     /**
-     * @var HttpAdapterInterface
+     * @var HttpClient
      */
-    protected $httpAdapter;
+    protected $httpClient;
 
     /**
-     * @param Filesystem           $filesystem
-     * @param HttpAdapterInterface $httpAdapter
+     * @param Filesystem $filesystem
+     * @param HttpClient $httpClient
      */
-    public function __construct(Filesystem $filesystem, HttpAdapterInterface $httpAdapter)
+    public function __construct(Filesystem $filesystem, HttpClient $httpClient)
     {
         $this->filesystem = $filesystem;
-        $this->httpAdapter = $httpAdapter;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -51,7 +51,7 @@ class Downloader
      */
     public function download(RequestInterface $request, $path)
     {
-        $response = $this->httpAdapter->sendRequest($request);
+        $response = $this->httpClient->sendRequest($request);
 
         if (!$body = $response->getBody()) {
             return false;

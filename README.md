@@ -28,13 +28,12 @@ Simple downloader usage:
 ``` php
 use Indigo\Flysystem\Downloader;
 use League\Flysystem\Filesystem;
-use Ivory\HttpAdapter\HttpAdapterInterface;
+use Http\Client\HttpClient;
 use Psr\Http\Message\RequestInterface;
 
-$downloader = new Downloader(new Filesystem, /* HttpAdapterInterface */);
+$downloader = new Downloader(/* Filesystem */, /* HttpClient */);
 
 $request = /* RequestInterface */;
-
 $downloader->download($request, 'path/to/file');
 ```
 
