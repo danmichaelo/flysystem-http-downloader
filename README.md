@@ -20,6 +20,8 @@ Via Composer
 $ composer require indigophp/flysystem-http-downloader
 ```
 
+You also need to add a [HTTPlug compatible HTTP library](http://docs.php-http.org/en/latest/clients.html). Popular choices are `php-http/curl-client` and `php-http/guzzle6-adapter`.
+
 
 ## Usage
 
